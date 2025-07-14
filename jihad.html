@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>House Market Account</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(118, 75, 162, 0.4);
+    max-width: 900px;
+    width: 100%;
+    padding: 40px 50px;
+  }
+  h1, h2 {
+    margin: 0 0 30px;
+    font-weight: 600;
+    color: #4b3f72;
+    text-align: center;
+    letter-spacing: 1.2px;
+  }
+  /* Login styles */
+  #loginScreen {
+    max-width: 400px;
+    margin: auto;
+  }
+  .input-group {
+    position: relative;
+    margin-bottom: 25px;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 14px 50px 14px 18px;
+    border: 2px solid #b8aee1;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: 0.3s;
+    outline: none;
+  }
+  .input-group input:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
+  }
+  .input-group .icon {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    color: #764ba2;
+    pointer-events: none;
+  }
+  button {
+    background-color: #764ba2;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.15rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #5c357d;
+  }
+  .error-msg {
+    color: #e74c3c;
+    margin-bottom: 15px;
+    font-weight: 600;
+    display: none;
+    text-align: center;
+  }
+
+  /* App screen */
+  #appScreen {
+    display: none;
+  }
+  #logoutBtn {
+    float: right;
+    background-color: #e74c3c;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+    margin-bottom: 25px;
+  }
+  #logoutBtn:hover {
+    background-color: #c0392b;
+  }
+  .welcome-text {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    color: #4b3f72;
+    text-align: center;
+  }
+
+  /* Members list */
+  #membersList {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 30px;
+  }
+  #membersList li {
+    background: #e9e1fa;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #4b3f72;
+    font-size: 1.1rem;
+  }
+
+  /* Form styles */
+  form .form-group {
+    margin-bottom: 20px;
+  }
+  form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #5e4b8b;
+  }
+  form input, form select {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 2px solid #b8aee1;
+    border-radius: 12px;
+    transition: 0.3s;
+    outline: none;
+  }
+  form input:focus, form select:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 8px rgba(118, 75, 162, 0.5);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+  }
+  th, td {
+    border: 1.8px solid #d1cbe6;
+    padding: 14px 12px;
+    text-align: center;
+    color: #5e4b8b;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  th {
+    background: #d3c6f3;
+  }
+  tfoot th {
+    font-size: 1.2rem;
+    background: #b2a0e6;
+    color: #3a2666;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .container {
+      padding: 30px 25px;
+    }
+    button, input, select {
+      font-size: 1rem;
+      padding: 12px 14px;
+    }
+    h1, h2 {
+      font-size: 1.6rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="loginScreen">
+  <h1>House Market Account</h1>
+  <form id="loginForm" autocomplete="off">
+    <div class="error-msg" id="loginError">Please enter a valid 11-digit mobile number.</div>
+    <div class="input-group">
+      <input type="text" id="mobileInput" placeholder="Enter mobile number" maxlength="11" pattern="\d{11}" required />
+      <span class="icon">📞</span>
+    </div>
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+<div class="container" id="appScreen">
+
+  <button id="logoutBtn" title="Logout">Logout</button>
+
+  <div class="welcome-text">Welcome, <span id="userNameDisplay"></span>!</div>
+
+  <section>
+    <h2>Members List</h2>
+    <ul id="membersList"></ul>
+  </section>
+
+  <section>
+    <h2>Add Market Item</h2>
+    <form id="addItemForm" autocomplete="off">
+      <div class="form-group">
+        <label for="itemName">Item Name</label>
+        <input type="text" id="itemName" placeholder="Item name" required />
+      </div>
+      <div class="form-group">
+        <label for="itemQty">Quantity</label>
+        <input type="number" id="itemQty" placeholder="Quantity (e.g. 2)" min="1" required />
+      </div>
+      <div class="form-group">
+        <label for="itemPrice">Price (BDT)</label>
+        <input type="number" id="itemPrice" placeholder="Price per item" min="1" step="0.01" required />
+      </div>
+      <div class="form-group">
+        <label for="itemBy">Brought By</label>
+        <select id="itemBy" required>
+          <option value="" disabled selected>Select member</option>
+        </select>
+      </div>
+      <button type="submit">Add Item</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Market Items List</h2>
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Quantity</th>
+          <th>Price (BDT)</th>
+          <th>Brought By</th>
+          <th>Total Price</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <th colspan="4" style="text-align:right;">Total Cost</th>
+          <th id="totalCost">0.00</th>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
+
+  <section>
+    <h2>Payments & Dues</h2>
+    <table id="paymentsTable">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Amount Paid (BDT)</th>
+          <th>Payment Method(s)</th>
+          <th>Due Amount (BDT)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Update Payment</h2>
+    <form id="updatePaymentForm" autocomplete="off">
+      <div class="form-group">
+        <label for="paymentBy">Select Member</label>
+        <select id="paymentBy" required>
+          <option value="" disabled selected>Select member</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="paymentAmount">Amount Paid (BDT)</label>
+        <input type="number" id="paymentAmount" min="1" step="0.01" placeholder="Enter amount paid" required />
+      </div>
+      <div class="form-group">
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod" required>
+          <option value="" disabled selected>Select method</option>
+          <option value="Cash">Cash</option>
+          <option value="Nagad">Nagad</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <button type="submit">Update Payment</button>
+    </form>
+  </section>
+
+</div>
+
+<script>
+  // Members data
+  const members = [
+    {name: "Rakib", mobile: "01700000000"},
+    {name: "Tanvir", mobile: "01800000000"},
+    {name: "Alam", mobile: "01900000000"},
+    {name: "Saif", mobile: "01600000000"}
+  ];
+
+  let loggedInUser = null;
+  let marketItems = [];
+  let payments = {}; // payments per member: array of {amount, method}
+
+  // Initialize empty payment arrays
+  members.forEach(m => payments[m.name] = []);
+
+  // DOM elements
+  const loginScreen = document.getElementById('loginScreen');
+  const appScreen = document.getElementById('appScreen');
+  const loginForm = document.getElementById('loginForm');
+  const mobileInput = document.getElementById('mobileInput');
+  const loginError = document.getElementById('loginError');
+  const userNameDisplay = document.getElementById('userNameDisplay');
+  const membersList = document.getElementById('membersList');
+  const itemBySelect = document.getElementById('itemBy');
+  const itemsTableBody = document.querySelector('#itemsTable tbody');
+  const totalCostEl = document.getElementById('totalCost');
+  const paymentsTableBody = document.querySelector('#paymentsTable tbody');
+  const paymentBySelect = document.getElementById('paymentBy');
+  const addItemForm = document.getElementById('addItemForm');
+  const updatePaymentForm = document.getElementById('updatePaymentForm');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  // Populate members in lists and selects
+  function populateMembers(){
+    membersList.innerHTML = '';
+    itemBySelect.innerHTML = '<option value="" disabled selected>Select member</option>';
+    paymentBySelect.innerHTML = '<option value="" disabled selected>Select member</option>';
+
+    members.forEach(member => {
+      const li = document.createElement('li');
+      li.textContent = `${member.name} (${member.mobile})`;
+      membersList.appendChild(li);
+
+      const opt1 = document.createElement('option');
+      opt1.value = member.name;
+      opt1.textContent = member.name;
+      itemBySelect.appendChild(opt1);
+
+      const opt2 = document.createElement('option');
+      opt2.value = member.name;
+      opt2.textContent = member.name;
+      paymentBySelect.appendChild(opt2);
+    });
+  }
+
+  // Render market items table and total cost
+  function renderItems(){
+    itemsTableBody.innerHTML = '';
+    let totalCost = 0;
+
+    marketItems.forEach(item => {
+      const tr = document.createElement('tr');
+      const itemTotal = item.price * item.qty;
+      totalCost += itemTotal;
+
+      tr.innerHTML = `
+        <td>${item.name}</td>
+        <td>${item.qty}</td>
+        <td>${item.price.toFixed(2)}</td>
+        <td>${item.by}</td>
+        <td>${itemTotal.toFixed(2)}</td>
+      `;
+      itemsTableBody.appendChild(tr);
+    });
+
+    totalCostEl.textContent = totalCost.toFixed(2);
+    renderPayments(totalCost);
+  }
+
+  // Render payments & dues table
+  function renderPayments(totalCost){
+    paymentsTableBody.innerHTML = '';
+    const share = totalCost / members.length;
+
+    members.forEach(member => {
+      const memberPayments = payments[member.name] || [];
+      const totalPaid = memberPayments.reduce((sum, p) => sum + p.amount, 0);
+
+      // Payment methods summary
+      const methodsSummary = memberPayments.reduce((acc, p) => {
+        acc[p.method] = (acc[p.method] || 0) + p.amount;
+        return acc;
+      }, {});
+
+      const methodDetails = Object.entries(methodsSummary)
+        .map(([method, amt]) => `${method}: ${amt.toFixed(2)}`)
+        .join(", ");
+
+      const due = share - totalPaid;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${member.name}</td>
+        <td>${totalPaid.toFixed(2)}</td>
+        <td><small style="color:#666; font-weight:400;">${methodDetails || '-'}</small></td>
+        <td>${due.toFixed(2)}</td>
+      `;
+      paymentsTableBody.appendChild(tr);
+    });
+  }
+
+  // Login form submit handler
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const mobile = mobileInput.value.trim();
+
+    if(/^\d{11}$/.test(mobile)){
+      const user = members.find(m => m.mobile === mobile);
+      if(user){
+        loggedInUser = user;
+        userNameDisplay.textContent = user.name;
+        loginError.style.display = 'none';
+        loginScreen.style.display = 'none';
+        appScreen.style.display = 'block';
+        populateMembers();
+        renderItems();
+        addItemForm.reset();
+        updatePaymentForm.reset();
+      } else {
+        loginError.textContent = 'Mobile number not found in members list.';
+        loginError.style.display = 'block';
+      }
+    } else {
+      loginError.textContent = 'Please enter a valid 11-digit mobile number.';
+      loginError.style.display = 'block';
+    }
+  });
+
+  // Logout handler
+  logoutBtn.addEventListener('click', () => {
+    loggedInUser = null;
+    loginScreen.style.display = 'block';
+    appScreen.style.display = 'none';
+    loginForm.reset();
+    loginError.style.display = 'none';
+  });
+
+  // Add market item submit handler
+  addItemForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('itemName').value.trim();
+    const qty = parseInt(document.getElementById('itemQty').value);
+    const price = parseFloat(document.getElementById('itemPrice').value);
+    const by = document.getElementById('itemBy').value;
+
+    if(name && qty > 0 && price > 0 && by){
+      marketItems.push({name, qty, price, by});
+      renderItems();
+      addItemForm.reset();
+    } else {
+      alert('Please fill all fields correctly.');
+    }
+  });
+
+  // Update payment submit handler
+  updatePaymentForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const member = document.getElementById('paymentBy').value;
+    const amount = parseFloat(document.getElementById('paymentAmount').value);
+    const method = document.getElementById('paymentMethod').value;
+
+    if(member && amount > 0 && method){
+      payments[member].push({amount, method});
+      renderItems();
+      updatePaymentForm.reset();
+    } else {
+      alert('Please provide valid payment details.');
+    }
+  });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
